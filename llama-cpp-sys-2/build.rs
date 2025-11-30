@@ -652,8 +652,9 @@ fn main() {
         config.cxxflag("-ftree-vectorize");
         config.cxxflag("-fPIC");
 
-        // Enable KleidiAI optimized kernels for ARM (improves quantized model performance)
-        config.define("GGML_CPU_KLEIDIAI", "ON");
+        // KleidiAI disabled - CMake FetchContent has compatibility issues with older CMake
+        // The compiler flags above still provide significant ARM64 optimizations
+        // config.define("GGML_CPU_KLEIDIAI", "ON");
 
         debug_log!("ARM64 Graviton2 optimizations enabled");
     }
