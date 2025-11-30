@@ -632,7 +632,30 @@ fn main() {
         // If the native feature is not enabled, we take off the native ARM64 support.
         // It is useful in docker environments where the native feature is not enabled.
         config.define("GGML_NATIVE", "OFF");
-        config.define("GGML_CPU_ARM_ARCH", "armv8-a");
+        config.define("GGML_CPU_ARM_ARCH", "armv8.2-a");
+    }
+
+    // ARM64 Linux (Graviton2/Neoverse-N1) optimizations
+    // These flags optimize for AWS Graviton2 and similar ARM64 server CPUs
+    if matches!(target_os, TargetOs::Linux) && target_triple.contains("aarch64") {
+        // Architecture flags: ARMv8.2 with fp16, dotprod, simd extensions
+        // These are critical for quantized LLM inference performance
+        config.cflag("-march=armv8.2-a+fp16+dotprod+simd");
+        config.cflag("-mtune=neoverse-n1");
+        config.cflag("-O3");
+        config.cflag("-ftree-vectorize");
+        config.cflag("-fPIC");
+
+        config.cxxflag("-march=armv8.2-a+fp16+dotprod+simd");
+        config.cxxflag("-mtune=neoverse-n1");
+        config.cxxflag("-O3");
+        config.cxxflag("-ftree-vectorize");
+        config.cxxflag("-fPIC");
+
+        // Enable KleidiAI optimized kernels for ARM (improves quantized model performance)
+        config.define("GGML_CPU_KLEIDIAI", "ON");
+
+        debug_log!("ARM64 Graviton2 optimizations enabled");
     }
 
     if cfg!(feature = "vulkan") {
