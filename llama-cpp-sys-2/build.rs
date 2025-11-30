@@ -666,8 +666,8 @@ fn main() {
                 && !content.contains("EXCLUDE_FROM_ALL")
             {
                 let patched = content.replace(
-                    "FetchContent_Declare(KleidiAI_Download\n            URL",
-                    "FetchContent_Declare(KleidiAI_Download\n            EXCLUDE_FROM_ALL\n            URL",
+                    "FetchContent_Declare(KleidiAI_Download",
+                    "FetchContent_Declare(KleidiAI_Download\n            EXCLUDE_FROM_ALL",
                 );
                 std::fs::write(&kleidiai_cmake, patched)
                     .expect("Failed to write patched CMakeLists.txt");
