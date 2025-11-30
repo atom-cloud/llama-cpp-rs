@@ -663,7 +663,7 @@ fn main() {
             let content = std::fs::read_to_string(&kleidiai_cmake)
                 .expect("Failed to read CMakeLists.txt");
             if content.contains("FetchContent_Declare(KleidiAI_Download")
-                && !content.contains("EXCLUDE_FROM_ALL")
+                && !content.contains("FetchContent_Declare(KleidiAI_Download\n            EXCLUDE_FROM_ALL")
             {
                 let patched = content.replace(
                     "FetchContent_Declare(KleidiAI_Download",
