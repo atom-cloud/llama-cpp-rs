@@ -652,11 +652,11 @@ fn main() {
         config.cxxflag("-ftree-vectorize");
         config.cxxflag("-fPIC");
 
-        // KleidiAI disabled - CMake FetchContent has compatibility issues with older CMake
-        // The compiler flags above still provide significant ARM64 optimizations
-        // config.define("GGML_CPU_KLEIDIAI", "ON");
+        // Enable KleidiAI for optimized ARM NEON/DOTPROD kernels
+        // Requires CMake 3.25+ for FetchContent URL parsing (4.1.2 recommended)
+        config.define("GGML_CPU_KLEIDIAI", "ON");
 
-        debug_log!("ARM64 Graviton2 optimizations enabled");
+        debug_log!("ARM64 Graviton2 + KleidiAI optimizations enabled");
     }
 
     if cfg!(feature = "vulkan") {
