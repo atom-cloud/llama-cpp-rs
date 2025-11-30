@@ -656,6 +656,25 @@ fn main() {
         // Requires CMake 3.25+ for FetchContent URL parsing (4.1.2 recommended)
         config.define("GGML_CPU_KLEIDIAI", "ON");
 
+        // Patch KleidiAI FetchContent to add EXCLUDE_FROM_ALL
+        // This prevents the install step from trying to install libkleidiai.a
+        let kleidiai_cmake = llama_src.join("ggml/src/ggml-cpu/CMakeLists.txt");
+        if kleidiai_cmake.exists() {
+            let content = std::fs::read_to_string(&kleidiai_cmake)
+                .expect("Failed to read CMakeLists.txt");
+            if content.contains("FetchContent_Declare(KleidiAI_Download")
+                && !content.contains("EXCLUDE_FROM_ALL")
+            {
+                let patched = content.replace(
+                    "FetchContent_Declare(KleidiAI_Download\n            URL",
+                    "FetchContent_Declare(KleidiAI_Download\n            EXCLUDE_FROM_ALL\n            URL",
+                );
+                std::fs::write(&kleidiai_cmake, patched)
+                    .expect("Failed to write patched CMakeLists.txt");
+                debug_log!("Patched KleidiAI FetchContent with EXCLUDE_FROM_ALL");
+            }
+        }
+
         debug_log!("ARM64 Graviton2 + KleidiAI optimizations enabled");
     }
 
